@@ -44,15 +44,7 @@ case "$BACKUP_PROG" in
         if [ "$BACKUP_TYPE" == "incremental" ]; then
             LAST="$restorearchive"
             BASEDIR=$(dirname "$restorearchive")
-            if is_true "$BACKUP_PROG_CRYPT_ENABLED" ; then
-                # As the archive is encrypted we cannot use tar to find the label (which should be the same as the content of file basebackup.txt)
-                # If that is not the case the restore will fail (verification needed after a new full backup if the content of file basebackup.txt
-                # will be modified as well - see issue #952)
-                BASE=$BASEDIR/$(cat $BASEDIR/basebackup.txt)
-            else
-                #BASE=$BASEDIR/$(tar --test-label -f "$restorearchive")
-                BASE=$BASEDIR/$(cat $BASEDIR/basebackup.txt)
-            fi
+            BASE=$BASEDIR/$(cat $BASEDIR/basebackup.txt)
             if [ "$BASE" == "$LAST" ]; then
                 Log dd if=$BASE \| $BACKUP_PROG_DECRYPT_OPTIONS $BACKUP_PROG_CRYPT_KEY \| $BACKUP_PROG --block-number --totals --verbose $BACKUP_PROG_OPTIONS "${BACKUP_PROG_COMPRESS_OPTIONS[@]}" -C $TARGET_FS_ROOT/ -x -f -
                 dd if=$BASE | $BACKUP_PROG_DECRYPT_OPTIONS $BACKUP_PROG_CRYPT_KEY | $BACKUP_PROG --block-number --totals --verbose $BACKUP_PROG_OPTIONS "${BACKUP_PROG_COMPRESS_OPTIONS[@]}" -C $TARGET_FS_ROOT/ -x -f -
